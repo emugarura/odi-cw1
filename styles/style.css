@@ -1,0 +1,7 @@
+#agencyChart .x.axis text {
+  font-size: 12px;
+    text-anchor: start !important;
+    transform: translate(-15px,-10px) rotate(-90deg);
+    /*dx: -.8em;
+    dy: .15em;*/
+}

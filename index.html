@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Open Data Innovation (CW1)</title>
+
+    <meta charset="UTF-8">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="styles/dc.css" />
+    <link rel="stylesheet" href="styles/style.css" />
+</head>
+
+<body>
+    <h2>US Government Projects</h2>
+    <div id="agencyChart"> <!-- style="height:500px" -->
+        <div class="reset" style="visibility: hidden;">Selected Agencies: <span class="filter"></span>
+            <a href="javascript:agencyChart.filterAll();dc.redrawAll();">reset</a>
+        </div>
+    </div>
+    <div id="dateChart">
+      <div class="reset" style="visibility: hidden;">Date range: <span class="filter"></span>
+          <a href="javascript:dateChart.filterAll();dc.redrawAll();">reset</a>
+      </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="scripts/d3.js"></script>
+    <script type="text/javascript" src="scripts/crossfilter.js"></script>
+    <script type="text/javascript" src="scripts/dc.js"></script>
+    <script type="text/javascript" src="scripts/script.js"></script>
+
+
+</body>
+
+</html>

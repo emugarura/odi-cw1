@@ -1,0 +1,6 @@
+
+# Data folder
+data/*
+
+# Apple Files
+.DS_Store
