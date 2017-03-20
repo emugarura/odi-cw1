@@ -1,6 +1,9 @@
 
 # Data folder
-data/*
+data/
 
-# Apple Files
+# Apple files
 .DS_Store
+
+# Temp files
+~*
