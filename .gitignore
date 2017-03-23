@@ -1,6 +1,7 @@
 
 # Data folder
 data/
+!data/data.csv
 
 # Apple files
 .DS_Store

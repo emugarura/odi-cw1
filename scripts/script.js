@@ -66,7 +66,7 @@ $(document).ready(function() {
 });
 
 // Load data
-d3.csv('data/ODI_CW1-v5.csv', function(d) {
+d3.csv('data/data.csv', function(d) {
     s_date = new Date(d['Start Date']);
     c_date = new Date(d['Completion Date (B1)']);
     return {
