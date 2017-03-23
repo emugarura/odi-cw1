@@ -5,6 +5,7 @@
     <title>Open Data Innovation (CW1)</title>
 
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="styles/dc.css" />
@@ -12,21 +13,56 @@
 </head>
 
 <body>
-    <h2>US Government Projects</h2>
-    <div id="agencyChart"> <!-- style="height:500px" -->
-        <div class="reset" style="visibility: hidden;">Selected Agencies: <span class="filter"></span>
-            <a href="javascript:agencyChart.filterAll();dc.redrawAll();">reset</a>
+
+    <nav class="navbar navbar-inverse ">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">US Government Projects</a>
+            </div>
+        </div>
+    </nav>
+    <div class="container-fluid text-center">
+        <div class="row content">
+            <div class="col-sm-12">
+                <div id="agencyChart">
+                    <div class="reset" style="visibility: hidden;">Selected Agencies: <span class="filter"></span>
+                        <a href="javascript:agencyChart.filterAll();dc.redrawAll();">reset</a>
+                    </div>
+                </div>
+                <div class="btn-group" data-toggle="buttons">
+                    <label class="btn btn-primary">
+                  <input type="radio" name="agency" value="count"> Number of Projects
+                </label>
+                    <label class="btn btn-primary">
+                  <input type="radio" name="agency" value="cost"> Total Cost
+                </label>
+                </div>
+                <div id="dateChart">
+                    <div class="reset" style="visibility: hidden;">Date range: <span class="filter"></span>
+                        <a href="javascript:dateChart.filterAll();dc.redrawAll();">reset</a>
+                    </div>
+                </div>
+                <div id='counterCount'>
+                    <span class='filter-count'></span> selected out of <span class='total-count'></span> records.
+                </div>
+                <span style="font-size: large" id="counter"></span>
+                <span id="counter-text" style="display: none"> selected.</span>
+                <!-- <div id="seriesChart">
+                    <div class="reset" style="visibility: hidden;">Date range: <span class="filter"></span>
+                        <a href="javascript:seriesChart.filterAll();dc.redrawAll();">reset</a>
+                    </div>
+                </div> -->
+            </div>
         </div>
     </div>
-    <div id="dateChart">
-      <div class="reset" style="visibility: hidden;">Date range: <span class="filter"></span>
-          <a href="javascript:dateChart.filterAll();dc.redrawAll();">reset</a>
-      </div>
-    </div>
+    <footer class="container-fluid text-center">
+        <p>Copyright 2017 Marios Siganos</p>
+    </footer>
     <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
     <script type="text/javascript" src="scripts/d3.js"></script>
     <script type="text/javascript" src="scripts/crossfilter.js"></script>
     <script type="text/javascript" src="scripts/dc.js"></script>
+    <script type="text/javascript" src="scripts/lysenko-interval-tree.js"></script>
     <script type="text/javascript" src="scripts/script.js"></script>
 
 

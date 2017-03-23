@@ -1,7 +1,31 @@
 #agencyChart .x.axis text {
-  font-size: 12px;
+    font-size: 12px;
     text-anchor: start !important;
-    transform: translate(-15px,-10px) rotate(-90deg);
+    transform: translate(-15px, -10px) rotate(-90deg);
     /*dx: -.8em;
     dy: .15em;*/
+}
+
+.navbar {
+    margin-bottom: 0;
+    border-radius: 0;
+    background-color: #337ab7;
+}
+
+.navbar-inverse {
+    border-color: #337ab7;
+}
+
+.navbar-inverse .navbar-nav > li > a, .navbar a.navbar-brand {
+  color: white;
+}
+
+footer {
+  background-color: #337ab7;
+  color: white;
+  padding: 0px;
+}
+
+footer > p {
+  margin: 0;
 }
