@@ -1,6 +1,6 @@
 
 # Data folder
-data/
+data/*
 !data/data.csv
 
 # Apple files
