@@ -24,7 +24,12 @@ function formatMoney(x) {
   : formatMillion)(x);
 }
 
-
+// Calculate difference between two dates in days
+function calcDatesDiff(start,end){
+  var timeDiff = Math.abs(end.getTime() - start.getTime());
+  var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+  return diffDays;
+}
 
 // Define the charts
 var agencyChart = dc.barChart('#agencyChart');
@@ -37,18 +42,27 @@ var pieChartCost = dc.pieChart('#pieChartCost');
 var counter = dc.numberDisplay('#counter');
 var counterCount = dc.dataCount('#counterCount');
 
-// Define some public variables related with crossfilters
-var agencyGroup, costPerAgencyGroup;
+// Define some global variables related with crossfilters
+var agencyGroup, costPerAgencyGroup, mDurationPerAgencyGroup;
 
 function setAgency(option) {
     if (option == 'count') {
         agencyChart.group(agencyGroup);
         agencyChart.yAxis().tickFormat(d3.format("d"));
-        agencyChart.yAxisLabel('# Projects')
-    } else {
+        agencyChart.yAxisLabel('# Projects');
+        agencyChart.valueAccessor(function(kv) { return kv.value; });
+    } else if (option == 'cost'){
         agencyChart.group(costPerAgencyGroup);
         agencyChart.yAxis().tickFormat(d3.format(".0f"));
-        agencyChart.yAxisLabel('Cost ($B)')
+        agencyChart.yAxisLabel('Cost ($B)');
+        agencyChart.valueAccessor(function(kv) { return kv.value; });
+    }else{
+        agencyChart.group(mDurationPerAgencyGroup);
+        agencyChart.yAxis().tickFormat(d3.format(".0f"));
+        agencyChart.yAxisLabel('Mean duration (in days)');
+        agencyChart.valueAccessor(function(kv) {
+                        return Math.round(kv.value.total / kv.value.count);
+                    });
     }
     dc.redrawAll();
 };
@@ -58,11 +72,7 @@ $(document).ready(function() {
 
   $("#opt-agency").change(function(){
         var selection = $("#opt-agency option:selected").val();
-        if (selection == 'count') {
-            setAgency('count');
-        } else {
-            setAgency('cost');
-        }
+        setAgency(selection);
     });
 
 });
@@ -80,7 +90,6 @@ d3.csv('data/data.csv', function(d) {
         c_var: +d['Cost Variance ($ M)']
     };
 }, function(data) {
-
     // Reduce data for testing purposes
     // data = data.slice(0,100);
 
@@ -125,6 +134,24 @@ d3.csv('data/data.csv', function(d) {
     costPerAgencyGroup = agencyDim.group().reduceSum(function(d) {
         return d.l_cost / 1000.0;
     });
+    mDurationPerAgencyGroup  = agencyDim.group().reduce(
+                        function(p, v) {
+                            ++p.count;
+                            p.total += calcDatesDiff(v.s_date,v.c_date);
+                            return p;
+                        },
+                        function(p, v) {
+                            --p.count;
+                            p.total -= calcDatesDiff(v.s_date,v.c_date);
+                            return p;
+                        },
+                        function() {
+                            return {
+                                count: 0,
+                                total: 0
+                            };
+                        }
+                    );
 
     var onScheduleGroup = onScheduleDim.group();
     var onBudgetGroup = onBudgetDim.group();
