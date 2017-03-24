@@ -29,6 +29,8 @@ function formatMoney(x) {
 // Define the charts
 var agencyChart = dc.barChart('#agencyChart');
 var dateChart = dc.barChart('#dateChart');
+var pieChartSchedule = dc.pieChart('#pieChartSchedule');
+var pieChartCost = dc.pieChart('#pieChartCost');
 // var seriesChart = dc.seriesChart("#seriesChart");
 
 // Define counter for selection
@@ -45,7 +47,7 @@ function setAgency(option) {
         agencyChart.yAxisLabel('# Projects')
     } else {
         agencyChart.group(costPerAgencyGroup);
-        agencyChart.yAxis().tickFormat(d3.format("$.0f"));
+        agencyChart.yAxis().tickFormat(d3.format(".0f"));
         agencyChart.yAxisLabel('Cost ($B)')
     }
     dc.redrawAll();
@@ -54,15 +56,15 @@ function setAgency(option) {
 // Set listeners
 $(document).ready(function() {
 
-
-    $('input[name=agency]').on('change', function() {
-        console.log($(this).val());
-        if ($('input[name=agency]:checked').val() == 'count') {
+  $("#opt-agency").change(function(){
+        var selection = $("#opt-agency option:selected").val();
+        if (selection == 'count') {
             setAgency('count');
         } else {
             setAgency('cost');
         }
     });
+
 });
 
 // Load data
@@ -74,6 +76,8 @@ d3.csv('data/data.csv', function(d) {
         s_date: s_date,
         c_date: c_date,
         l_cost: +d['Lifecycle Cost'],
+        s_var: +d['Schedule Variance (in days)'],
+        c_var: +d['Cost Variance ($ M)']
     };
 }, function(data) {
 
@@ -97,6 +101,16 @@ d3.csv('data/data.csv', function(d) {
         return d.l_cost;
     });
 
+    var onScheduleDim  = cf.dimension(function(d){
+      if (d.s_var>=0) { return 'YES' }
+      else { return 'NO' }
+    });
+
+    var onBudgetDim =  cf.dimension(function(d){
+      if (d.c_var>=0) { return 'YES' }
+      else { return 'NO' }
+    });
+
     var min_sDateDim = sDateDim.bottom(1)[0]['s_date'];
     var max_sDateDim = sDateDim.top(1)[0]['s_date'];
 
@@ -111,6 +125,9 @@ d3.csv('data/data.csv', function(d) {
     costPerAgencyGroup = agencyDim.group().reduceSum(function(d) {
         return d.l_cost / 1000.0;
     });
+
+    var onScheduleGroup = onScheduleDim.group();
+    var onBudgetGroup = onBudgetDim.group();
 
     // Agency Bar Chart
     agencyChart
@@ -134,9 +151,9 @@ d3.csv('data/data.csv', function(d) {
     agencyChart.yAxis().tickFormat(d3.format("d"));
 
     // agencyChart listener
-    agencyChart.on('renderlet', function(chart, filter){
-      console.log(groupAllCostSum.value());
-    });
+    // agencyChart.on('renderlet', function(chart, filter){
+    //   console.log(groupAllCostSum.value());
+    // });
 
     // Date Bar Chart
     dateChart
@@ -170,8 +187,29 @@ d3.csv('data/data.csv', function(d) {
         .html({
             some: '<strong>%filter-count</strong> selected out of <strong>%total-count</strong> records' +
                 ' | <a href=\'javascript:dc.filterAll(); dc.renderAll();\'>Reset All</a>',
-            all: 'All records selected.'
+            all: 'All projects selected.'
         });
+
+    pieChartSchedule
+      // .width(768)
+      // .height(480)
+      // .slicesCap(4)
+      // .innerRadius(100)
+      .dimension(onScheduleDim)
+      .group(onScheduleGroup)
+      // .legend(dc.legend())
+
+      // .on('pretransition', function(chart) {
+      //     chart.selectAll('text.pie-slice').text(function(d) {
+      //         return d.data.key + ' ' + dc.utils.printSingleValue((d.endAngle - d.startAngle) / (2*Math.PI) * 100) + '%';
+      //     })
+      // })
+      ;
+
+      pieChartCost
+        .dimension(onBudgetDim)
+        .group(onBudgetGroup)
+        ;
 
     dc.renderAll();
 
