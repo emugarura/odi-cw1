@@ -15,20 +15,24 @@ function print_filter(filter) {
 
 // Format numbers for money
 var formatNumber = d3.format("$.2f");
-var formatBillion = function(x) { return formatNumber(x / 1e3) + "B"; };
-var formatMillion = function(x) { return formatNumber(x) + "M"; };
+var formatBillion = function(x) {
+    return formatNumber(x / 1e3) + "B";
+};
+var formatMillion = function(x) {
+    return formatNumber(x) + "M";
+};
 
 function formatMoney(x) {
-  var num = Math.round(x);
-  return (num >= 1000 ? formatBillion
-  : formatMillion)(x);
+    var num = Math.round(x);
+    return (num >= 1000 ? formatBillion :
+        formatMillion)(x);
 }
 
 // Calculate difference between two dates in days
-function calcDatesDiff(start,end){
-  var timeDiff = Math.abs(end.getTime() - start.getTime());
-  var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
-  return diffDays;
+function calcDatesDiff(start, end) {
+    var timeDiff = Math.abs(end.getTime() - start.getTime());
+    var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+    return diffDays;
 }
 
 // Define the charts
@@ -36,7 +40,6 @@ var agencyChart = dc.barChart('#agencyChart');
 var dateChart = dc.barChart('#dateChart');
 var pieChartSchedule = dc.pieChart('#pieChartSchedule');
 var pieChartCost = dc.pieChart('#pieChartCost');
-// var seriesChart = dc.seriesChart("#seriesChart");
 
 // Define counter for selection
 var counter = dc.numberDisplay('#counter');
@@ -50,19 +53,23 @@ function setAgency(option) {
         agencyChart.group(agencyGroup);
         agencyChart.yAxis().tickFormat(d3.format("d"));
         agencyChart.yAxisLabel('# Projects');
-        agencyChart.valueAccessor(function(kv) { return kv.value; });
-    } else if (option == 'cost'){
+        agencyChart.valueAccessor(function(kv) {
+            return kv.value;
+        });
+    } else if (option == 'cost') {
         agencyChart.group(costPerAgencyGroup);
         agencyChart.yAxis().tickFormat(d3.format(".0f"));
         agencyChart.yAxisLabel('Cost ($B)');
-        agencyChart.valueAccessor(function(kv) { return kv.value; });
-    }else{
+        agencyChart.valueAccessor(function(kv) {
+            return kv.value;
+        });
+    } else {
         agencyChart.group(mDurationPerAgencyGroup);
         agencyChart.yAxis().tickFormat(d3.format(".0f"));
         agencyChart.yAxisLabel('Mean duration (in days)');
         agencyChart.valueAccessor(function(kv) {
-                        return Math.round(kv.value.total / kv.value.count);
-                    });
+            return Math.round(kv.value.total / kv.value.count);
+        });
     }
     dc.redrawAll();
 };
@@ -70,7 +77,7 @@ function setAgency(option) {
 // Set listeners
 $(document).ready(function() {
 
-  $("#opt-agency").change(function(){
+    $("#opt-agency").change(function() {
         var selection = $("#opt-agency option:selected").val();
         setAgency(selection);
     });
@@ -85,7 +92,7 @@ d3.csv('data/data.csv', function(d) {
         agency: d['Agency Name'],
         s_date: s_date,
         c_date: c_date,
-        l_cost: +d['Lifecycle Cost'],
+        l_cost: +d[['Lifecycle Cost']], //'Projected/Actual Cost ($ M)'
         s_var: +d['Schedule Variance (in days)'],
         c_var: +d['Cost Variance ($ M)']
     };
@@ -110,14 +117,20 @@ d3.csv('data/data.csv', function(d) {
         return d.l_cost;
     });
 
-    var onScheduleDim  = cf.dimension(function(d){
-      if (d.s_var>=0) { return 'YES' }
-      else { return 'NO' }
+    var onScheduleDim = cf.dimension(function(d) {
+        if (d.s_var >= 0) {
+            return 'YES'
+        } else {
+            return 'NO'
+        }
     });
 
-    var onBudgetDim =  cf.dimension(function(d){
-      if (d.c_var>=0) { return 'YES' }
-      else { return 'NO' }
+    var onBudgetDim = cf.dimension(function(d) {
+        if (d.c_var >= 0) {
+            return 'YES'
+        } else {
+            return 'NO'
+        }
     });
 
     var min_sDateDim = sDateDim.bottom(1)[0]['s_date'];
@@ -134,24 +147,24 @@ d3.csv('data/data.csv', function(d) {
     costPerAgencyGroup = agencyDim.group().reduceSum(function(d) {
         return d.l_cost / 1000.0;
     });
-    mDurationPerAgencyGroup  = agencyDim.group().reduce(
-                        function(p, v) {
-                            ++p.count;
-                            p.total += calcDatesDiff(v.s_date,v.c_date);
-                            return p;
-                        },
-                        function(p, v) {
-                            --p.count;
-                            p.total -= calcDatesDiff(v.s_date,v.c_date);
-                            return p;
-                        },
-                        function() {
-                            return {
-                                count: 0,
-                                total: 0
-                            };
-                        }
-                    );
+    mDurationPerAgencyGroup = agencyDim.group().reduce(
+        function(p, v) {
+            ++p.count;
+            p.total += calcDatesDiff(v.s_date, v.c_date);
+            return p;
+        },
+        function(p, v) {
+            --p.count;
+            p.total -= calcDatesDiff(v.s_date, v.c_date);
+            return p;
+        },
+        function() {
+            return {
+                count: 0,
+                total: 0
+            };
+        }
+    );
 
     var onScheduleGroup = onScheduleDim.group();
     var onBudgetGroup = onBudgetDim.group();
@@ -177,11 +190,6 @@ d3.csv('data/data.csv', function(d) {
 
     agencyChart.yAxis().tickFormat(d3.format("d"));
 
-    // agencyChart listener
-    // agencyChart.on('renderlet', function(chart, filter){
-    //   console.log(groupAllCostSum.value());
-    // });
-
     // Date Bar Chart
     dateChart
     // .width()
@@ -196,15 +204,19 @@ d3.csv('data/data.csv', function(d) {
         .controlsUseVisibility(true);
 
     // Implement counter for selection
-    var groupAllCostSum = cf.groupAll().reduceSum(function(d) { return d.l_cost; });
+    var groupAllCostSum = cf.groupAll().reduceSum(function(d) {
+        return d.l_cost;
+    });
 
     counter
-      .dimension({})
-      .group(groupAllCostSum)
-      .formatNumber(formatMoney)
-      .valueAccessor(function(x) { return x; });
+        .dimension({})
+        .group(groupAllCostSum)
+        .formatNumber(formatMoney)
+        .valueAccessor(function(x) {
+            return x;
+        });
 
-    counter.on('postRender', function () {
+    counter.on('postRender', function() {
         d3.select('#counter-text').style('display', 'inline');
     });
 
@@ -218,25 +230,13 @@ d3.csv('data/data.csv', function(d) {
         });
 
     pieChartSchedule
-      // .width(768)
-      // .height(480)
-      // .slicesCap(4)
-      // .innerRadius(100)
-      .dimension(onScheduleDim)
-      .group(onScheduleGroup)
-      // .legend(dc.legend())
+        .dimension(onScheduleDim)
+        .group(onScheduleGroup)
+    ;
 
-      // .on('pretransition', function(chart) {
-      //     chart.selectAll('text.pie-slice').text(function(d) {
-      //         return d.data.key + ' ' + dc.utils.printSingleValue((d.endAngle - d.startAngle) / (2*Math.PI) * 100) + '%';
-      //     })
-      // })
-      ;
-
-      pieChartCost
+    pieChartCost
         .dimension(onBudgetDim)
-        .group(onBudgetGroup)
-        ;
+        .group(onBudgetGroup);
 
     dc.renderAll();
 
